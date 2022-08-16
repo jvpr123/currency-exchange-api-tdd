@@ -21,6 +21,10 @@ describe('Currency Repository', () => {
     }).compile();
 
     repository = module.get<CurrencyRepository>(CurrencyRepository);
+
+    repository.save = jest.fn();
+    repository.findOneBy = jest.fn().mockReturnValue(makeCurrencyMock());
+    repository.delete = jest.fn();
   });
 
   it('should be defined', () => {
@@ -29,9 +33,7 @@ describe('Currency Repository', () => {
 
   describe('findBySign()', () => {
     it('should call findOneBy() with correct values', async () => {
-      repository.findOneBy = jest.fn().mockResolvedValueOnce({});
       await repository.findBySign('USD');
-
       expect(repository.findOneBy).toHaveBeenCalledWith({ currency: 'USD' });
     });
 
@@ -51,8 +53,7 @@ describe('Currency Repository', () => {
     });
   });
 
-  describe('findBySign()', () => {
-    beforeEach(() => (repository.save = jest.fn()));
+  describe('createCurrency()', () => {
     it('should call create() with correct values', async () => {
       await repository.createCurrency(makeCurrencyMock());
       expect(repository.save).toHaveBeenCalledWith(makeCurrencyMock());
@@ -63,7 +64,7 @@ describe('Currency Repository', () => {
         .fn()
         .mockRejectedValueOnce(new InternalServerErrorException());
 
-      expect(repository.save(makeCurrencyMock())).rejects.toThrow(
+      expect(repository.createCurrency(makeCurrencyMock())).rejects.toThrow(
         new InternalServerErrorException(),
       );
     });
@@ -83,8 +84,83 @@ describe('Currency Repository', () => {
         .fn()
         .mockResolvedValueOnce(makeCurrencyMock() as Currency);
 
-      expect(repository.save(makeCurrencyMock())).resolves.toEqual(
+      expect(repository.createCurrency(makeCurrencyMock())).resolves.toEqual(
         makeCurrencyMock(),
+      );
+    });
+  });
+
+  describe('updateCurrency()', () => {
+    it('should call findOneBy() with correct values', async () => {
+      const data = makeCurrencyMock();
+
+      await repository.updateCurrency(data);
+      expect(repository.findOneBy).toHaveBeenCalledWith({
+        currency: data.currency,
+      });
+    });
+
+    it('should throw an error when findOneBy() returns undefined', async () => {
+      repository.findOneBy = jest.fn().mockReturnValueOnce(undefined);
+      expect(repository.updateCurrency(makeCurrencyMock())).rejects.toThrow(
+        new NotFoundException(),
+      );
+    });
+
+    it('should call save() with correct values', async () => {
+      repository.save = jest.fn().mockReturnValueOnce(makeCurrencyMock());
+
+      await repository.updateCurrency(makeCurrencyMock(5));
+      expect(repository.save).toHaveBeenCalledWith(makeCurrencyMock(5));
+    });
+
+    it('should throw an error when save() throws', async () => {
+      repository.save = jest
+        .fn()
+        .mockRejectedValueOnce(new InternalServerErrorException());
+
+      expect(repository.updateCurrency(makeCurrencyMock())).rejects.toThrow(
+        new InternalServerErrorException(),
+      );
+    });
+
+    it('should return an updated Currency instance when save() returns updated data', async () => {
+      repository.save = jest
+        .fn()
+        .mockResolvedValueOnce(makeCurrencyMock(5) as Currency);
+
+      expect(repository.updateCurrency(makeCurrencyMock(5))).resolves.toEqual(
+        makeCurrencyMock(5),
+      );
+    });
+  });
+
+  describe('deleteCurrency()', () => {
+    const { currency } = makeCurrencyMock();
+    it('should call findOneBy() with correct values', async () => {
+      await repository.deleteCurrency(currency);
+      expect(repository.findOneBy).toHaveBeenCalledWith({ currency });
+    });
+
+    it('should throw an error when findOneBy() returns undefined', async () => {
+      repository.findOneBy = jest.fn().mockReturnValueOnce(undefined);
+      expect(repository.deleteCurrency(currency)).rejects.toThrow(
+        new NotFoundException(),
+      );
+    });
+
+    it('should call delete() with correct values', async () => {
+      await repository.deleteCurrency(currency);
+      expect(repository.delete).toHaveBeenCalledWith({ currency });
+    });
+
+    it('should throw an error when delete() throws', async () => {
+      repository.delete = jest
+        .fn()
+        .mockRejectedValueOnce(new InternalServerErrorException());
+
+      expect(repository.deleteCurrency(currency)).rejects.toThrow(
+        new InternalServerErrorException(),
       );
     });
   });
