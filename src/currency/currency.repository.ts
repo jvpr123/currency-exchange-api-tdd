@@ -1,15 +1,26 @@
+import { Repository } from 'typeorm';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { Currency } from './entities/Currency.entity';
 import { CreateCurrencyInput } from './dto/CreateCurrency.input';
 import { UpdateCurrencyInput } from './dto/UpdateCurrency.input';
-import { Repository } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
+import { validateOrReject } from 'class-validator';
 
 export class CurrencyRepository extends Repository<Currency> {
-  async createCurrency({
-    currency,
-    value,
-  }: CreateCurrencyInput): Promise<Currency> {
-    return new Currency();
+  async createCurrency(data: CreateCurrencyInput): Promise<Currency> {
+    const currency = new Currency();
+    Object.assign(currency, data);
+
+    try {
+      await validateOrReject(currency);
+
+      return await this.save(currency);
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async findBySign(currency: string): Promise<Currency> {

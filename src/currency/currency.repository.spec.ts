@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+
 import { CurrencyRepository } from './currency.repository';
-import { Repository } from 'typeorm';
 import { Currency } from './entities/Currency.entity';
-import { NotFoundException } from '@nestjs/common';
 
 describe('Currency Repository', () => {
   let repository: CurrencyRepository;
@@ -45,6 +48,44 @@ describe('Currency Repository', () => {
         .mockResolvedValueOnce(makeCurrencyMock() as Currency);
 
       expect(repository.findBySign('USD')).resolves.toEqual(makeCurrencyMock());
+    });
+  });
+
+  describe('findBySign()', () => {
+    beforeEach(() => (repository.save = jest.fn()));
+    it('should call create() with correct values', async () => {
+      await repository.createCurrency(makeCurrencyMock());
+      expect(repository.save).toHaveBeenCalledWith(makeCurrencyMock());
+    });
+
+    it('should throw an error when invalid params are provided', async () => {
+      repository.save = jest
+        .fn()
+        .mockRejectedValueOnce(new InternalServerErrorException());
+
+      expect(repository.save(makeCurrencyMock())).rejects.toThrow(
+        new InternalServerErrorException(),
+      );
+    });
+
+    it('should throw an error when save() throws', async () => {
+      repository.save = jest
+        .fn()
+        .mockRejectedValueOnce(new InternalServerErrorException());
+
+      expect(repository.save(makeCurrencyMock())).rejects.toThrow(
+        new InternalServerErrorException(),
+      );
+    });
+
+    it('should return a Currency instance when save() returns created data', async () => {
+      repository.save = jest
+        .fn()
+        .mockResolvedValueOnce(makeCurrencyMock() as Currency);
+
+      expect(repository.save(makeCurrencyMock())).resolves.toEqual(
+        makeCurrencyMock(),
+      );
     });
   });
 });
