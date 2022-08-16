@@ -18,10 +18,10 @@ describe('CurrencyService', () => {
 
   beforeEach(async () => {
     const makeCurrencyRepositoryMock = () => ({
-      create: jest.fn().mockResolvedValue(makeCurrencyMock()),
+      createCurrency: jest.fn().mockResolvedValue(makeCurrencyMock()),
       findBySign: jest.fn().mockResolvedValue(makeCurrencyMock()),
-      update: jest.fn().mockResolvedValue(makeCurrencyMock()),
-      delete: jest.fn(),
+      updateCurrency: jest.fn().mockResolvedValue(makeCurrencyMock()),
+      deleteCurrency: jest.fn(),
     });
 
     const module: TestingModule = await Test.createTestingModule({
@@ -68,7 +68,7 @@ describe('CurrencyService', () => {
 
   describe('createCurrency()', () => {
     it('should throw an error when repository throws', async () => {
-      (repository.create as jest.Mock).mockRejectedValueOnce(
+      (repository.createCurrency as jest.Mock).mockRejectedValueOnce(
         new InternalServerErrorException(),
       );
       expect(service.createCurrency(makeCurrencyMock())).rejects.toThrow(
@@ -82,7 +82,9 @@ describe('CurrencyService', () => {
 
     it('should call repository with correct parameters', async () => {
       await service.createCurrency(makeCurrencyMock());
-      expect(repository.create).toHaveBeenCalledWith(makeCurrencyMock());
+      expect(repository.createCurrency).toHaveBeenCalledWith(
+        makeCurrencyMock(),
+      );
     });
 
     it('should throw an error when value provided is smaller or equal 0', async () => {
@@ -94,7 +96,7 @@ describe('CurrencyService', () => {
 
   describe('updateCurrency()', () => {
     it('should throw an error when repository throws', async () => {
-      (repository.update as jest.Mock).mockRejectedValueOnce(
+      (repository.updateCurrency as jest.Mock).mockRejectedValueOnce(
         new InternalServerErrorException(),
       );
       expect(service.updateCurrency(makeCurrencyMock(5))).rejects.toThrow(
@@ -110,7 +112,9 @@ describe('CurrencyService', () => {
 
     it('should call repository with correct parameters', async () => {
       await service.updateCurrency(makeCurrencyMock(5));
-      expect(repository.update).toHaveBeenCalledWith(makeCurrencyMock(5));
+      expect(repository.updateCurrency).toHaveBeenCalledWith(
+        makeCurrencyMock(5),
+      );
     });
 
     it('should throw an error when value provided is smaller or equal 0', async () => {
@@ -122,7 +126,7 @@ describe('CurrencyService', () => {
 
   describe('deleteCurrency()', () => {
     it('should throw an error when repository throws', async () => {
-      (repository.delete as jest.Mock).mockRejectedValueOnce(
+      (repository.deleteCurrency as jest.Mock).mockRejectedValueOnce(
         new InternalServerErrorException(),
       );
       expect(service.deleteCurrency('')).rejects.toThrow(
@@ -136,7 +140,7 @@ describe('CurrencyService', () => {
 
     it('should call repository with correct parameters', async () => {
       await service.deleteCurrency('USD');
-      expect(repository.delete).toHaveBeenCalledWith('USD');
+      expect(repository.deleteCurrency).toHaveBeenCalledWith('USD');
     });
   });
 });
