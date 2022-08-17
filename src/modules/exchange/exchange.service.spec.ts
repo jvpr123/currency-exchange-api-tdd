@@ -4,13 +4,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CurrencyService } from 'src/modules/currency/currency.service';
 
 import { ExchangeService } from './exchange.service';
-import { IExchangeInput } from './dto/ExchangeInput.interface';
+import { ExchangeInput } from './dto/ExchangeInput.input';
 
 describe('ExchangeService', () => {
   let service: ExchangeService;
   let currencyService: CurrencyService;
 
-  const mockInputData = (): IExchangeInput => ({
+  const mockInputData = (): ExchangeInput => ({
     from: 'USD',
     to: 'BRL',
     amount: 1,

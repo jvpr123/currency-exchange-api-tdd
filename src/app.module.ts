@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Currency } from './modules/currency/entities/Currency.entity';
-import { ExchangeModule } from './modules/exchange/exchange.module';
 import { CurrencyModule } from './modules/currency/currency.module';
+
+import { ExchangeModule } from './modules/exchange/exchange.module';
 
 @Module({
   imports: [
@@ -18,5 +19,6 @@ import { CurrencyModule } from './modules/currency/currency.module';
     ExchangeModule,
     CurrencyModule,
   ],
+  controllers: [],
 })
 export class AppModule {}
