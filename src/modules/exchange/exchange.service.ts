@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { CurrencyService } from 'src/currency/currency.service';
+import { CurrencyService } from 'src/modules/currency/currency.service';
 
 import { IExchangeInput } from './dto/ExchangeInput.interface';
 import { IExchangeResult } from './dto/ExchangeResult.interface';

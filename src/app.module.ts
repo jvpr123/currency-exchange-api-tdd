@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { Currency } from './currency/entities/Currency.entity';
-import { ExchangeModule } from './exchange/exchange.module';
-import { CurrencyModule } from './currency/currency.module';
+import { Currency } from './modules/currency/entities/Currency.entity';
+import { ExchangeModule } from './modules/exchange/exchange.module';
+import { CurrencyModule } from './modules/currency/currency.module';
 
 @Module({
   imports: [
