@@ -8,4 +8,4 @@
   - { currency: 'USD', value: 1 } 
 - PATCH (/currencies/BRL/value)
   - { value: 0.2 }
-- DELETE (//currencies/EUR/) 
+- DELETE (/currencies/EUR/) 

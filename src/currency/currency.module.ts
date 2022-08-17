@@ -8,7 +8,7 @@ import { CurrencyRepository } from './currency.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Currency, CurrencyRepository])],
-  providers: [CurrencyService],
+  providers: [CurrencyService, CurrencyRepository],
   controllers: [CurrencyController],
   exports: [CurrencyService],
 })
